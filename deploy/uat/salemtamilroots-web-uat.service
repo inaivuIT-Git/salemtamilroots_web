@@ -10,6 +10,8 @@ Restart=always
 RestartSec=5
 User=www-data
 Environment=NODE_ENV=production
+# The app binds "localhost". Resolve it to 127.0.0.1 (not ::1) so nginx finds it at 127.0.0.1:3102.
+Environment=NODE_OPTIONS=--dns-result-order=ipv4first
 EnvironmentFile=/opt/uat/salemtamilroots_web/.env.production.local
 SyslogIdentifier=str-web-uat
 
