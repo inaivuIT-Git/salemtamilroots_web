@@ -1,0 +1,17 @@
+# /etc/systemd/system/salemtamilroots-web.service  (UAT: copy as salemtamilroots-web-uat.service, port 3102)
+[Unit]
+Description=Salem Tamil Roots storefront (Next.js)
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/salemtamilroots/salemtamilroots_web
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+User=www-data
+Environment=NODE_ENV=production
+Environment=PORT=3101
+EnvironmentFile=/opt/salemtamilroots/salemtamilroots_web/.env.production.local
+
+[Install]
+WantedBy=multi-user.target
