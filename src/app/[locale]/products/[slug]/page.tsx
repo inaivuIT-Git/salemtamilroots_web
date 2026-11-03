@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getBestSellers, getProduct } from "@/lib/api";
-import { legacy } from "@/lib/site";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductRail } from "@/components/product/ProductRail";
 import { ProductStory } from "@/components/product/ProductStory";
@@ -61,9 +60,9 @@ export default async function ProductPage({ params }: Props) {
           </li>
           <li aria-hidden>/</li>
           <li>
-            <a href={legacy.shop} className="hover:text-forest-700">
+            <Link href="/shop" className="hover:text-forest-700">
               {t("breadcrumbShop")}
-            </a>
+            </Link>
           </li>
           <li aria-hidden>/</li>
           <li className="font-medium text-ink" aria-current="page">

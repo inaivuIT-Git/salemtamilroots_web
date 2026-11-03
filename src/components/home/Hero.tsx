@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { Banner } from "@/lib/types";
-import { legacy } from "@/lib/site";
+import { Link } from "@/i18n/navigation";
 import { ArrowIcon } from "@/components/ui/icons";
 import { BannerCarousel } from "./BannerCarousel";
 
@@ -33,10 +33,10 @@ export function Hero({ banners, locale }: { banners: Banner[]; locale: string })
           </p>
           <p className="max-w-[52ch] text-lg text-muted">{t("heroText")}</p>
           <div className="flex flex-wrap gap-3">
-            <a href={legacy.shop} className="btn btn-primary group">
+            <Link href="/shop" className="btn btn-primary group">
               {t("heroCta")}
               <ArrowIcon className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
             <a href="#story" className="btn btn-ghost">
               {t("heroCta2")}
             </a>

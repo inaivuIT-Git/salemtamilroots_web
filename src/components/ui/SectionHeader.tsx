@@ -1,3 +1,4 @@
+import { Link } from "@/i18n/navigation";
 import { ArrowIcon } from "./icons";
 
 export function SectionHeader({ title, text, href, linkLabel }: { title: string; text?: string; href?: string; linkLabel?: string }) {
@@ -8,10 +9,10 @@ export function SectionHeader({ title, text, href, linkLabel }: { title: string;
         {text && <p className="text-muted">{text}</p>}
       </div>
       {href && (
-        <a href={href} className="group inline-flex items-center gap-2 font-semibold text-forest-700">
+        <Link href={href} className="group inline-flex items-center gap-2 font-semibold text-forest-700">
           {linkLabel}
           <ArrowIcon className="size-4 transition-transform group-hover:translate-x-1" />
-        </a>
+        </Link>
       )}
     </div>
   );

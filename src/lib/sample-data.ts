@@ -4,7 +4,7 @@
   "Sample data" bar while this is on. Names follow the Menmai posters; individual prices,
   stock levels, ratings and reviews here are placeholders, not real figures.
 */
-import type { Banner, Category, ProductDetail, ProductSummary, Review, StrpxSection } from "./types";
+import type { Banner, Category, ProductDetail, ProductPage, ProductSummary, Review, ShopSort, StrpxSection } from "./types";
 
 export const categories: Category[] = [
   { id: 1, name: "Millet Brownies", image: "/sample/brownie-choco.webp" },
@@ -73,4 +73,16 @@ export function productDetail(slug: string): ProductDetail | null {
     story: isCombo ? comboStory : comboStory.filter((x) => ["oneLine", "about", "storage", "promise", "thanks"].includes(x.key)),
     reviews: reviews.slice(0, 2),
   };
+}
+
+const sampleCategoryOf: Record<number, string> = { 1: "Millet Brownies", 2: "Millet Snacks", 3: "Combo Packs", 4: "Herbal Care" };
+
+export function productPage(o: { categoryId?: number; q?: string; sort: ShopSort; page: number }, size: number): ProductPage {
+  let list = [...products];
+  if (o.categoryId) list = list.filter((p) => p.categoryName === sampleCategoryOf[o.categoryId!]);
+  if (o.q) list = list.filter((p) => p.name.toLowerCase().includes(o.q!.toLowerCase()));
+  if (!o.q) list.sort((a, b) => (o.sort === "priceHigh" ? b.price - a.price : a.price - b.price));
+  if (o.sort === "new" && !o.q) list = list.slice(0, 2);
+  const totalPages = Math.max(1, Math.ceil(list.length / size));
+  return { items: list.slice((o.page - 1) * size, o.page * size), page: o.page, totalPages, totalCount: list.length };
 }

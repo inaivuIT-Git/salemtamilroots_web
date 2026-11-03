@@ -1,5 +1,5 @@
 import "server-only";
-import type { Banner, Category, ProductDetail, ProductSummary, Review, StrpxKey, StrpxSection, Variant } from "./types";
+import type { Banner, Category, ProductDetail, ProductPage, ProductSummary, Review, ShopSort, StrpxKey, StrpxSection, Variant } from "./types";
 import { cleanHtml, htmlToText } from "./html";
 import * as sample from "./sample-data";
 
@@ -189,11 +189,12 @@ function mapListItem(i: ApiListItem): ProductSummary {
 }
 
 // ---------- public functions ----------
-export async function getCategories(): Promise<Category[]> {
+/** includeCombo: the home page hides "Combo Offers" (as the current site does); the shop lists it. */
+export async function getCategories({ includeCombo = false } = {}): Promise<Category[]> {
   if (usingSampleData) return sample.categories;
   const rows = (await get<ApiCategory[]>("/api/Category")) ?? [];
   return rows
-    .filter((c) => (c.categoryName ?? "").trim().toLowerCase() !== "combo offers") // hidden on the current site too
+    .filter((c) => includeCombo || (c.categoryName ?? "").trim().toLowerCase() !== "combo offers")
     .map((c) => ({ id: c.categoryId, name: c.categoryName ?? "", image: imageUrl(c.imageUrl), slug: c.slug ?? undefined }));
 }
 
@@ -222,6 +223,35 @@ export async function getNewOnShelf(): Promise<ProductSummary[]> {
 export async function getAllProducts(): Promise<ProductSummary[]> {
   if (usingSampleData) return sample.products;
   return ((await get<ApiListItem[]>("/api/Product")) ?? []).map(mapListItem);
+}
+
+type ApiPaged<T> = { page: number; pageSize: number; totalCount: number; totalPages: number; data: T[] };
+export const SHOP_PAGE_SIZE = 12;
+
+/*
+  Product listing, the same endpoints products_listing.js uses:
+   - a category:   /api/Product/listing/{id}?page&pageSize&sort
+   - everything:   /api/Product/paginated?page&pageSize&sort
+   - search:       /api/Search/customer?q&page&pageSize   (no sort)
+  sort: priceLow (default) | priceHigh | new (added in the last 7 days).
+*/
+export async function getProductPage(opts: { categoryId?: number; q?: string; sort?: ShopSort; page?: number }): Promise<ProductPage> {
+  const page = Math.max(1, opts.page ?? 1);
+  const sort = opts.sort ?? "priceLow";
+  if (usingSampleData) return sample.productPage({ ...opts, page, sort }, SHOP_PAGE_SIZE);
+  const qs = `page=${page}&pageSize=${SHOP_PAGE_SIZE}`;
+  const path = opts.q
+    ? `/api/Search/customer?q=${encodeURIComponent(opts.q)}&${qs}`
+    : opts.categoryId
+      ? `/api/Product/listing/${opts.categoryId}?${qs}&sort=${sort}`
+      : `/api/Product/paginated?${qs}&sort=${sort}`;
+  const r = await get<ApiPaged<ApiListItem>>(path);
+  return {
+    items: (r?.data ?? []).map(mapListItem),
+    page: r?.page || page,
+    totalPages: Math.max(1, r?.totalPages || 1),
+    totalCount: r?.totalCount ?? 0,
+  };
 }
 
 export async function getTopReviews(limit = 10): Promise<Review[]> {

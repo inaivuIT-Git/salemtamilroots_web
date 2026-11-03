@@ -28,7 +28,7 @@ export function Header() {
   const announce = [t("announce.made"), t("announce.millets"), t("announce.secure")];
   const nav = [
     { href: "/", label: t("nav.home"), internal: true },
-    { href: legacy.shop, label: t("nav.shop") },
+    { href: "/shop", label: t("nav.shop"), internal: true },
     { href: legacy.about, label: t("nav.about") },
   ];
 
@@ -84,9 +84,9 @@ export function Header() {
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <a href={legacy.shop} className="rounded-full p-2.5 text-forest-800 hover:bg-leaf-100" aria-label={t("nav.search")}>
+            <Link href="/shop#shop-search" className="rounded-full p-2.5 text-forest-800 hover:bg-leaf-100" aria-label={t("nav.search")}>
               <SearchIcon className="size-[22px]" />
-            </a>
+            </Link>
             <Link
               href={pathname}
               locale={other}

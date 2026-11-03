@@ -53,3 +53,6 @@ export type ProductDetail = ProductSummary & {
   sellerName?: string;
   reviews: Review[];
 };
+
+export type ShopSort = "priceLow" | "priceHigh" | "new";
+export type ProductPage = { items: ProductSummary[]; page: number; totalPages: number; totalCount: number };

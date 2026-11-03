@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { legacy, site } from "@/lib/site";
+import { Link } from "@/i18n/navigation";
 import { MailIcon, PhoneIcon } from "@/components/ui/icons";
 
 export function Footer() {
@@ -9,7 +10,7 @@ export function Footer() {
     {
       title: t("shop"),
       links: [
-        { href: legacy.shop, label: t("shop") },
+        { href: "/shop", label: t("shop"), internal: true },
         { href: legacy.sell, label: t("sell") },
       ],
     },
@@ -57,11 +58,17 @@ export function Footer() {
         {cols.map((c) => (
           <div key={c.title} className="flex flex-col gap-3">
             <h3 className="text-sm font-semibold tracking-wider text-turmeric-200 uppercase">{c.title}</h3>
-            {c.links.map((l) => (
-              <a key={l.href} href={l.href} className="text-leaf-100/85 hover:text-white">
-                {l.label}
-              </a>
-            ))}
+            {c.links.map((l) =>
+              "internal" in l ? (
+                <Link key={l.href} href={l.href} className="text-leaf-100/85 hover:text-white">
+                  {l.label}
+                </Link>
+              ) : (
+                <a key={l.href} href={l.href} className="text-leaf-100/85 hover:text-white">
+                  {l.label}
+                </a>
+              ),
+            )}
           </div>
         ))}
       </div>

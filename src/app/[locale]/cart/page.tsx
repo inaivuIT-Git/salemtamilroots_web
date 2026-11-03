@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart";
 import { rupees } from "@/lib/format";
-import { legacy } from "@/lib/site";
 
 export default function CartPage() {
   const t = useTranslations("cart");
@@ -19,9 +18,9 @@ export default function CartPage() {
       {lines.length === 0 ? (
         <div className="flex flex-col items-start gap-4 rounded-[2rem] bg-paper p-10 shadow-[var(--shadow-card)]">
           <p className="text-lg">{t("empty")}</p>
-          <a href={legacy.shop} className="btn btn-primary">
+          <Link href="/shop" className="btn btn-primary">
             {t("continue")}
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
