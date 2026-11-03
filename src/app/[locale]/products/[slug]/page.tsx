@@ -6,6 +6,7 @@ import { getBestSellers, getProduct } from "@/lib/api";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductRail } from "@/components/product/ProductRail";
 import { ProductStory } from "@/components/product/ProductStory";
+import { TrackView } from "@/components/product/TrackView";
 import { Rating } from "@/components/ui/Rating";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
@@ -50,6 +51,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="container-x pt-6">
+      <TrackView item={{ id: p.id, slug: p.slug, name: p.name, image: p.image, price: p.price, mrp: p.mrp, variantLabel: p.variantLabel }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
         <ol className="flex flex-wrap items-center gap-2">

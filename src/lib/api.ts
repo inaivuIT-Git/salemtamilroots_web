@@ -254,6 +254,32 @@ export async function getProductPage(opts: { categoryId?: number; q?: string; so
   };
 }
 
+/** Products with an active discount, biggest saving first (one card per product). */
+export async function getDeals(limit = 8): Promise<ProductSummary[]> {
+  const all = await getAllProducts();
+  return all
+    .filter((p) => p.mrp && p.mrp > p.price && p.inStock)
+    .sort((a, b) => (b.mrp! - b.price) / b.mrp! - (a.mrp! - a.price) / a.mrp!)
+    .slice(0, limit);
+}
+
+/**
+ * The product the home page leads with: HERO_PRODUCT_SLUG if set (e.g. a festival offer),
+ * otherwise the best seller with the biggest active discount, otherwise the top best seller.
+ */
+export async function getHeroProduct(locale: string, best: ProductSummary[]): Promise<ProductDetail | null> {
+  const pinned = process.env.HERO_PRODUCT_SLUG?.trim();
+  const candidates = [
+    ...(pinned ? [pinned] : []),
+    ...[...best].filter((p) => p.image && p.inStock).sort((a, b) => (b.mrp ? b.mrp - b.price : 0) - (a.mrp ? a.mrp - a.price : 0)).map((p) => p.slug),
+  ];
+  for (const slug of candidates.slice(0, 3)) {
+    const d = await getProduct(slug, locale);
+    if (d?.image) return d;
+  }
+  return null;
+}
+
 export async function getTopReviews(limit = 10): Promise<Review[]> {
   if (usingSampleData) return sample.reviews;
   const rows = (await get<ApiTopReview[]>(`/api/reviews/top?limit=${limit}`)) ?? [];

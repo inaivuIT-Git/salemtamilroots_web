@@ -8,7 +8,7 @@ import { AddToCartButton } from "./AddToCartButton";
 
 const tints = ["bg-leaf-100", "bg-turmeric-100", "bg-tan-200/60", "bg-kumkum-100/70"];
 
-export function ProductCard({ p, index = 0 }: { p: ProductSummary; index?: number }) {
+export function ProductCard({ p, index = 0, badge }: { p: ProductSummary; index?: number; badge?: string }) {
   const off = discountPercent(p.price, p.mrp);
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] bg-paper shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]">
@@ -25,8 +25,11 @@ export function ProductCard({ p, index = 0 }: { p: ProductSummary; index?: numbe
         ) : (
           <Image src="/brand/logo.png" alt="" fill className="object-contain p-14 opacity-40" />
         )}
-        {off > 0 && (
-          <span className="absolute top-3 left-3 rounded-full bg-kumkum-600 px-2.5 py-1 text-xs font-bold text-white">-{off}%</span>
+        {(badge || off > 0) && (
+          <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
+            {badge && <span className="rounded-full bg-turmeric-500 px-2.5 py-1 text-xs font-bold text-forest-950 shadow">{badge}</span>}
+            {off > 0 && <span className="rounded-full bg-kumkum-600 px-2.5 py-1 text-xs font-bold text-white">-{off}%</span>}
+          </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
