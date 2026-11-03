@@ -12,7 +12,11 @@ import * as sample from "./sample-data";
   `unwrap` accepts both.
 */
 
+// Public API address: used to build image URLs that browsers load.
 const API = (process.env.API_BASE_URL ?? "https://uat.salemtamilroots.in").replace(/\/$/, "");
+// Address the server itself calls. On the VPS this is the API directly (http://127.0.0.1:5001),
+// which skips Cloudflare (it may block server-to-server requests) and is faster.
+const API_INTERNAL = (process.env.API_INTERNAL_URL || API).replace(/\/$/, "");
 export const usingSampleData = process.env.USE_SAMPLE_DATA === "1";
 const REVALIDATE = 300; // seconds; product data refreshes every 5 minutes
 
@@ -32,15 +36,24 @@ function unwrap<T>(body: unknown): T | null {
 
 async function get<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API}${path}`, {
+    const res = await fetch(`${API_INTERNAL}${path}`, {
       next: { revalidate: REVALIDATE },
       signal: AbortSignal.timeout(8000),
       headers: { Accept: "application/json" },
     });
-    const body = await res.json().catch(() => null);
-    return unwrap<T>(body);
+    const text = await res.text();
+    let body: unknown = null;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      console.error(`[api] GET ${path}: HTTP ${res.status}, not JSON: ${text.slice(0, 160).replace(/\s+/g, " ")}`);
+      return null;
+    }
+    const data = unwrap<T>(body);
+    if (data === null) console.error(`[api] GET ${path}: HTTP ${res.status}, no data: ${text.slice(0, 200)}`);
+    return data;
   } catch (err) {
-    console.error(`[api] GET ${path} failed:`, err);
+    console.error(`[api] GET ${API_INTERNAL}${path} failed:`, err);
     return null;
   }
 }
