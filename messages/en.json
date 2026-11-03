@@ -98,5 +98,23 @@
     "title": "We couldn't find that page",
     "text": "The product may have moved or sold out.",
     "home": "Back to home"
+  },
+  "strpx": {
+    "onThisPage": "On this page",
+    "oneLine": "In One Line",
+    "about": "About the Product",
+    "echoes": "Echoes of Tradition",
+    "memory": "Gateway to a Memory",
+    "why": "Why This Product?",
+    "ingredients": "Key Ingredients",
+    "love": "Why You'll Love It",
+    "heritage": "Traditional Heritage",
+    "tamilLife": "In Tamil Life…",
+    "whoFor": "Who Is It For?",
+    "directions": "Directions for Use",
+    "storage": "Storage Instructions",
+    "important": "Important Note",
+    "promise": "The SalemTamilRoots Promise",
+    "thanks": "Thank You"
   }
 }

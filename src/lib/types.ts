@@ -22,9 +22,33 @@ export type Variant = { id: number; label: string; price: number; mrp?: number; 
 
 export type Review = { id: number | string; author: string; rating: number; text: string; productName?: string; date?: string };
 
+/** STRPX v2.0 (SalemTamilRoots Product Experience) sections, in the framework's order. */
+export const STRPX_KEYS = [
+  "oneLine",
+  "about",
+  "echoes",
+  "memory",
+  "why",
+  "ingredients",
+  "love",
+  "heritage",
+  "tamilLife",
+  "whoFor",
+  "directions",
+  "storage",
+  "important",
+  "promise",
+  "thanks",
+] as const;
+export type StrpxKey = (typeof STRPX_KEYS)[number];
+/** html is already sanitised (see src/lib/html.ts). */
+export type StrpxSection = { key: StrpxKey; html: string };
+
 export type ProductDetail = ProductSummary & {
   images: string[];
-  description?: string; // plain text or simple HTML from the seller's rich-text editor
+  description?: string; // plain text, for search engines and link previews
+  summary?: string; // short description shown under the title (sanitised HTML)
+  story: StrpxSection[]; // only the sections that have content
   variants: Variant[];
   sellerName?: string;
   reviews: Review[];

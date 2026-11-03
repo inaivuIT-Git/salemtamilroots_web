@@ -19,7 +19,7 @@ export function BuyBox({ p, children }: { p: ProductDetail; children?: React.Rea
   const low = v?.inStock && v.stock !== undefined && v.stock > 0 && v.stock <= 5;
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
       <Gallery images={images} name={p.name} />
 
       <div className="flex flex-col gap-6">

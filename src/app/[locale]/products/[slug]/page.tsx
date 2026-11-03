@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getBestSellers, getProduct } from "@/lib/api";
-import { htmlToParagraphs } from "@/lib/text";
 import { legacy } from "@/lib/site";
 import { BuyBox } from "@/components/product/BuyBox";
 import { ProductRail } from "@/components/product/ProductRail";
+import { ProductStory } from "@/components/product/ProductStory";
 import { Rating } from "@/components/ui/Rating";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   const p = await getProduct(slug, locale);
   if (!p) return {};
-  const description = htmlToParagraphs(p.description).join(" ").slice(0, 160) || undefined;
+  const description = p.description ? (p.description.length > 160 ? `${p.description.slice(0, 157)}…` : p.description) : undefined;
   return {
     title: p.name,
     description,
@@ -28,9 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const [p, t, best] = await Promise.all([getProduct(slug, locale), getTranslations("product"), getBestSellers()]);
+  const [p, t, tStrpx, best] = await Promise.all([getProduct(slug, locale), getTranslations("product"), getTranslations("strpx"), getBestSellers()]);
   if (!p) notFound();
-  const paragraphs = htmlToParagraphs(p.description);
+  const oneLine = p.story.find((x) => x.key === "oneLine")?.html;
   const related = best.filter((x) => x.name !== p.name).slice(0, 4);
 
   const jsonLd = {
@@ -38,7 +38,7 @@ export default async function ProductPage({ params }: Props) {
     "@type": "Product",
     name: p.name,
     image: p.images,
-    description: paragraphs.join(" ") || undefined,
+    description: p.description,
     brand: { "@type": "Brand", name: "Salem Tamil Roots" },
     aggregateRating: p.rating && p.ratingCount ? { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.ratingCount } : undefined,
     offers: p.variants.map((v) => ({
@@ -84,19 +84,17 @@ export default async function ProductPage({ params }: Props) {
               </span>
             )}
           </div>
+          {oneLine && (
+            <div className="relative mt-2 border-l-4 border-turmeric-500 pl-5">
+              <span className="sr-only">{tStrpx("oneLine")}: </span>
+              <div className="strp-prose font-display text-xl leading-snug text-forest-700 italic md:text-2xl" dangerouslySetInnerHTML={{ __html: oneLine }} />
+            </div>
+          )}
+          {p.summary && <div className="strp-prose text-muted" dangerouslySetInnerHTML={{ __html: p.summary }} />}
         </div>
       </BuyBox>
 
-      {paragraphs.length > 0 && (
-        <section className="mt-16 grid gap-6 rounded-[2rem] bg-paper p-8 shadow-[var(--shadow-card)] md:grid-cols-[260px_1fr] md:p-12">
-          <h2 className="font-display text-3xl font-semibold text-forest-800">{t("description")}</h2>
-          <div className="flex max-w-[68ch] flex-col gap-4 text-[17px] leading-relaxed">
-            {paragraphs.map((x, i) => (
-              <p key={i}>{x}</p>
-            ))}
-          </div>
-        </section>
-      )}
+      <ProductStory sections={p.story} />
 
       <section id="reviews" className="mt-16 scroll-mt-28">
         <SectionHeader title={t("reviews")} />

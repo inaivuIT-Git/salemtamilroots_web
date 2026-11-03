@@ -1,5 +1,6 @@
 import "server-only";
-import type { Banner, Category, ProductDetail, ProductSummary, Review, Variant } from "./types";
+import type { Banner, Category, ProductDetail, ProductSummary, Review, StrpxKey, StrpxSection, Variant } from "./types";
+import { cleanHtml, htmlToText } from "./html";
 import * as sample from "./sample-data";
 
 /*
@@ -111,12 +112,63 @@ type ApiVariant = {
   imageUrl: string; additionalImages: string[];
 };
 type ApiReview = { customerId: number; customerName: string; rating: number; title: string | null; comment: string | null; createdAt: string | null };
+type Txt = string | null | undefined;
+type ApiDetailDescription = {
+  englishEchoesOfTradition: Txt; tamilEchoesOfTradition: Txt;
+  englishWhyThisProduct: Txt; tamilWhyThisProduct: Txt;
+  englishKeyIngredients: Txt; tamilKeyIngredients: Txt;
+  englishHighlights: Txt; tamilHighlights: Txt;
+  englishTraditionalHeritage: Txt; tamilTraditionalHeritage: Txt;
+  englishAHeritageNote: Txt; tamilAHeritageNote: Txt;
+  englishWhoIsItFor: Txt; tamilWhoIsItFor: Txt;
+  englishDirectionsOfUse: Txt; tamilDirectionsOfUse: Txt;
+  englishStorageInstructions: Txt; tamilStorageInstructions: Txt;
+  englishImportantNote: Txt; tamilImportantNote: Txt;
+  englishSalemtamilrootsPromise: Txt; tamilSalemtamilrootsPromise: Txt;
+  englishThankYou: Txt; tamilThankYou: Txt;
+  // Not in the API yet (STRPX v2 "Gateway to a Memory"); used automatically once the backend adds it.
+  englishGatewayToAMemory?: Txt; tamilGatewayToAMemory?: Txt;
+};
 type ApiDetail = {
   displayName: string | null; categoryName: string; sellerName: string | null;
-  englishTitle: string | null; tamilTitle: string | null; englishShortDescription: string | null; shortDescription: string;
+  englishTitle: string | null; tamilTitle: string | null; englishSubtitle: Txt; tamilSubtitle: Txt;
+  englishShortDescription: string | null; shortDescription: string;
   description: string; tamilDescription: string | null; rating: number; reviewCount: number;
+  detailDescription: ApiDetailDescription | null;
   variants: ApiVariant[]; reviews: ApiReview[];
 };
+
+/*
+  STRPX v2.0 section -> API fields (same mapping as product_details.js on the current site).
+  "In Tamil Life" uses the A-Heritage-Note field, which the current site shows as "Heritage Note".
+*/
+function strpxSections(d: ApiDetail, ta: boolean): StrpxSection[] {
+  const x = d.detailDescription ?? ({} as ApiDetailDescription);
+  const src: Record<StrpxKey, [Txt, Txt]> = {
+    oneLine: [d.englishSubtitle, d.tamilSubtitle],
+    about: [d.description, d.tamilDescription],
+    echoes: [x.englishEchoesOfTradition, x.tamilEchoesOfTradition],
+    memory: [x.englishGatewayToAMemory, x.tamilGatewayToAMemory],
+    why: [x.englishWhyThisProduct, x.tamilWhyThisProduct],
+    ingredients: [x.englishKeyIngredients, x.tamilKeyIngredients],
+    love: [x.englishHighlights, x.tamilHighlights],
+    heritage: [x.englishTraditionalHeritage, x.tamilTraditionalHeritage],
+    tamilLife: [x.englishAHeritageNote, x.tamilAHeritageNote],
+    whoFor: [x.englishWhoIsItFor, x.tamilWhoIsItFor],
+    directions: [x.englishDirectionsOfUse, x.tamilDirectionsOfUse],
+    storage: [x.englishStorageInstructions, x.tamilStorageInstructions],
+    important: [x.englishImportantNote, x.tamilImportantNote],
+    promise: [x.englishSalemtamilrootsPromise, x.tamilSalemtamilrootsPromise],
+    thanks: [x.englishThankYou, x.tamilThankYou],
+  };
+  return (Object.keys(src) as StrpxKey[])
+    .map((key) => {
+      const [en, tamil] = src[key];
+      // Show the visitor's language; fall back to the other one rather than leave a gap.
+      return { key, html: cleanHtml(ta ? tamil || en : en || tamil) };
+    })
+    .filter((s) => s.html);
+}
 
 function mapListItem(i: ApiListItem): ProductSummary {
   const { price, mrp } = priceOf(i);
@@ -209,6 +261,7 @@ export async function getProduct(slug: string, locale: string): Promise<ProductD
   const images = Array.from(new Set([pre.imageUrl, ...(pre.additionalImages ?? [])].map(imageUrl).filter(Boolean) as string[])).slice(0, 6);
   const v0 = variants.find((v) => v.id === pre.productId) ?? variants[0];
   const ta = locale === "ta";
+  const story = strpxSections(d, ta);
 
   return {
     id: v0.id,
@@ -224,7 +277,12 @@ export async function getProduct(slug: string, locale: string): Promise<ProductD
     rating: d.rating ? Math.round(d.rating * 10) / 10 : undefined,
     ratingCount: d.reviewCount || undefined,
     inStock: v0.inStock,
-    description: (ta ? d.tamilDescription || d.shortDescription : d.description || d.englishShortDescription) || undefined,
+    summary: cleanHtml(ta ? d.shortDescription || d.englishShortDescription : d.englishShortDescription || d.shortDescription) || undefined,
+    story,
+    description:
+      htmlToText(ta ? d.tamilSubtitle || d.tamilDescription : d.englishSubtitle || d.description) ||
+      htmlToText(ta ? d.shortDescription : d.englishShortDescription) ||
+      undefined,
     variants,
     sellerName: d.sellerName || undefined,
     reviews: (d.reviews ?? [])

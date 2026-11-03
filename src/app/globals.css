@@ -110,3 +110,15 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Rich text from the product editor (STRPX sections) */
+@layer components {
+  .strp-prose { display: flex; flex-direction: column; gap: 0.85em; max-width: 68ch; }
+  .strp-prose ul, .strp-prose ol { display: flex; flex-direction: column; gap: 0.45em; padding-left: 1.3em; }
+  .strp-prose ul { list-style: disc; }
+  .strp-prose ol { list-style: decimal; }
+  .strp-prose li::marker { color: var(--color-turmeric-500); }
+  .strp-prose strong, .strp-prose b { font-weight: 700; }
+  .strp-prose h3, .strp-prose h4 { font-weight: 700; font-size: 1.05em; }
+  .strp-prose blockquote { border-left: 3px solid var(--color-turmeric-500); padding-left: 1em; font-style: italic; }
+}
