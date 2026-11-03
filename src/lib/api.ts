@@ -254,6 +254,35 @@ export async function getProductPage(opts: { categoryId?: number; q?: string; so
   };
 }
 
+// ---------- settings that drive offers (public GET /api/AppSettings/{key}) ----------
+async function getSetting(key: string): Promise<string | undefined> {
+  if (usingSampleData) return sample.settings[key];
+  const r = await get<{ key: string; value: string | null }>(`/api/AppSettings/${encodeURIComponent(key)}`);
+  return r?.value?.trim() || undefined;
+}
+
+export type Offers = {
+  /** Free welcome gift on the first order, while the admin's date window is open. */
+  welcomeGift: { active: boolean; minOrder?: number };
+  /** Orders at or above this subtotal ship free (cart rule; default ₹399). */
+  freeShippingFrom?: number;
+};
+
+export async function getOffers(): Promise<Offers> {
+  const [from, to, min, freeShip] = await Promise.all([
+    getSetting("WelcomeGift:EnabledFrom"),
+    getSetting("WelcomeGift:EnabledTo"),
+    getSetting("WelcomeGift:MinimumOrderAmount"),
+    getSetting("ShippingSettings:MinimumAmountForFreeShipping"),
+  ]);
+  const now = Date.now();
+  const start = from ? Date.parse(from) : NaN;
+  const end = to ? Date.parse(to) + 24 * 3600 * 1000 : NaN; // inclusive of the last day
+  const active = !Number.isNaN(start) && !Number.isNaN(end) && now >= start && now < end;
+  const num = (v?: string) => (v && Number.isFinite(Number(v)) ? Number(v) : undefined);
+  return { welcomeGift: { active, minOrder: num(min) }, freeShippingFrom: num(freeShip) ?? 399 };
+}
+
 /** Products with an active discount, biggest saving first (one card per product). */
 export async function getDeals(limit = 8): Promise<ProductSummary[]> {
   const all = await getAllProducts();

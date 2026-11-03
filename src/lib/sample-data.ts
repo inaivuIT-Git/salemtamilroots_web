@@ -86,3 +86,10 @@ export function productPage(o: { categoryId?: number; q?: string; sort: ShopSort
   const totalPages = Math.max(1, Math.ceil(list.length / size));
   return { items: list.slice((o.page - 1) * size, o.page * size), page: o.page, totalPages, totalCount: list.length };
 }
+
+export const settings: Record<string, string> = {
+  "WelcomeGift:EnabledFrom": "2026-10-01",
+  "WelcomeGift:EnabledTo": "2026-12-31",
+  "WelcomeGift:MinimumOrderAmount": "249",
+  "ShippingSettings:MinimumAmountForFreeShipping": "399",
+};

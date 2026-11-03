@@ -22,15 +22,15 @@ export function OfferHero({ p }: { p: ProductDetail }) {
     <section className="relative overflow-hidden bg-forest-900 text-white">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_80%_at_80%_40%,rgb(227_162_32/0.35),transparent_60%),radial-gradient(50%_60%_at_10%_100%,rgb(47_133_90/0.45),transparent_60%)]" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-2 bg-[repeating-linear-gradient(90deg,var(--color-turmeric-500)_0_18px,var(--color-kumkum-600)_18px_36px,var(--color-leaf-400)_36px_54px)]" />
-      <div className="container-x relative grid items-center gap-8 py-10 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-12 md:py-16 lg:py-20">
+      <div className="container-x relative grid items-center gap-6 py-8 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-12 md:py-16 lg:py-20">
         <div className="order-2 flex flex-col gap-5 md:order-1">
           <span className="w-fit rounded-full bg-turmeric-500 px-3 py-1 text-xs font-bold tracking-wider text-forest-950 uppercase">
             {p.ratingCount ? t("heroTagLoved") : t("heroTag")}
           </span>
           <h1 className="font-display text-[clamp(2.2rem,5vw,4rem)] leading-[1.04] font-semibold">{p.name}</h1>
           {oneLine && <div className="strp-prose font-display text-xl text-turmeric-200 italic md:text-2xl" dangerouslySetInnerHTML={{ __html: oneLine }} />}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 [&_*]:!text-white/90">
-            <Rating value={p.rating} count={p.ratingCount} />
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Rating value={p.rating} count={p.ratingCount} onDark />
             {v?.label && <span className="text-sm text-white/80">{v.label}</span>}
           </div>
           <div className="flex flex-wrap items-end gap-3">
@@ -46,6 +46,7 @@ export function OfferHero({ p }: { p: ProductDetail }) {
             {v && (
               <div className="w-full sm:w-64">
                 <AddToCartButton
+                  accent
                   disabled={!v.inStock}
                   line={{ variantId: v.id, productId: p.id, slug: p.slug, name: p.name, variantLabel: v.label, image: p.image, price: v.price, qty: 1 }}
                 />
@@ -58,7 +59,7 @@ export function OfferHero({ p }: { p: ProductDetail }) {
           <p className="text-sm text-white/70">{t("noSignup")}</p>
         </div>
 
-        <div className="relative order-1 mx-auto w-full max-w-[520px] md:order-2">
+        <div className="relative order-1 mx-auto w-full max-w-[300px] sm:max-w-[420px] md:order-2 md:max-w-[520px]">
           <div aria-hidden className="absolute inset-[6%] rounded-full bg-turmeric-500/25 blur-2xl" />
           <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-paper/95 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] ring-8 ring-white/10">
             {p.image && <Image src={p.image} alt={p.name} fill priority sizes="(max-width: 768px) 92vw, 520px" className="object-contain p-6" />}
