@@ -13,7 +13,7 @@ export const site = {
   is rebuilt here, so plain links keep working during the switch-over.
 */
 export const legacy = {
-  shop: "/products_listing.html",
+  shop: "/products_listing.html?mode=all", // without mode=all the old listing reopens the last category viewed
   cart: "/viewcart.html",
   signin: "/signin.html",
   about: "/about.html",
@@ -23,5 +23,5 @@ export const legacy = {
   privacy: "/privacy.html",
   terms: "/terms.html",
   sell: "/SellerSignUp.html",
-  category: (id: number | string) => `/products_listing.html?categoryId=${id}`,
+  category: (id: number | string) => `/products_listing.html?cid=${id}`, // products_listing.js reads "cid"
 };
