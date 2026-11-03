@@ -1,0 +1,127 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { getBestSellers, getProduct } from "@/lib/api";
+import { BuyBox } from "@/components/product/BuyBox";
+import { ProductRail } from "@/components/product/ProductRail";
+import { ProductStory } from "@/components/product/ProductStory";
+import { TrackView } from "@/components/product/TrackView";
+import { Rating } from "@/components/ui/Rating";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+
+type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const p = await getProduct(slug, locale);
+  if (!p) return {};
+  const description = p.description ? (p.description.length > 160 ? `${p.description.slice(0, 157)}…` : p.description) : undefined;
+  return {
+    title: p.name,
+    description,
+    alternates: { canonical: locale === "ta" ? `/ta/products/${slug}` : `/products/${slug}` },
+    openGraph: { title: p.name, description, images: p.image ? [{ url: p.image }] : undefined },
+  };
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+  const [p, t, tStrpx, best] = await Promise.all([getProduct(slug, locale), getTranslations("product"), getTranslations("strpx"), getBestSellers()]);
+  if (!p) notFound();
+  const oneLine = p.story.find((x) => x.key === "oneLine")?.html;
+  const related = best.filter((x) => x.name !== p.name).slice(0, 4);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name,
+    image: p.images,
+    description: p.description,
+    brand: { "@type": "Brand", name: "Salem Tamil Roots" },
+    aggregateRating: p.rating && p.ratingCount ? { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.ratingCount } : undefined,
+    offers: p.variants.map((v) => ({
+      "@type": "Offer",
+      priceCurrency: "INR",
+      price: v.price,
+      availability: v.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    })),
+  };
+
+  return (
+    <div className="container-x pt-6">
+      <TrackView item={{ id: p.id, slug: p.slug, name: p.name, image: p.image, price: p.price, mrp: p.mrp, variantLabel: p.variantLabel }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li>
+            <Link href="/" className="hover:text-forest-700">
+              {t("breadcrumbHome")}
+            </Link>
+          </li>
+          <li aria-hidden>/</li>
+          <li>
+            <Link href="/shop" className="hover:text-forest-700">
+              {t("breadcrumbShop")}
+            </Link>
+          </li>
+          <li aria-hidden>/</li>
+          <li className="font-medium text-ink" aria-current="page">
+            {p.name}
+          </li>
+        </ol>
+      </nav>
+
+      <BuyBox p={p}>
+        <div className="flex flex-col gap-3">
+          {p.categoryName && <span className="eyebrow">{p.categoryName}</span>}
+          <h1 className="font-display text-4xl leading-tight font-semibold text-forest-800 md:text-5xl">{p.name}</h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Rating value={p.rating} count={p.ratingCount} />
+            {p.sellerName && (
+              <span className="text-sm text-muted">
+                {t("soldBy")} <span className="font-semibold text-ink">{p.sellerName}</span>
+              </span>
+            )}
+          </div>
+          {oneLine && (
+            <div className="relative mt-2 border-l-4 border-turmeric-500 pl-5">
+              <span className="sr-only">{tStrpx("oneLine")}: </span>
+              <div className="strp-prose font-display text-xl leading-snug text-forest-700 italic md:text-2xl" dangerouslySetInnerHTML={{ __html: oneLine }} />
+            </div>
+          )}
+          {p.summary && <div className="strp-prose text-muted" dangerouslySetInnerHTML={{ __html: p.summary }} />}
+        </div>
+      </BuyBox>
+
+      <ProductStory sections={p.story} />
+
+      <section id="reviews" className="mt-16 scroll-mt-28">
+        <SectionHeader title={t("reviews")} />
+        {p.reviews.length ? (
+          <ul className="grid gap-5 md:grid-cols-2">
+            {p.reviews.map((r) => (
+              <li key={r.id} className="flex flex-col gap-3 rounded-[var(--radius-card)] bg-paper p-6 shadow-[var(--shadow-card)]">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-semibold">{r.author}</span>
+                  <Rating value={r.rating} small />
+                </div>
+                <p className="leading-relaxed">{r.text}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted">{t("noReviews")}</p>
+        )}
+      </section>
+
+      {related.length > 0 && (
+        <section className="mt-20">
+          <SectionHeader title={t("related")} />
+          <ProductRail products={related} />
+        </section>
+      )}
+    </div>
+  );
+}

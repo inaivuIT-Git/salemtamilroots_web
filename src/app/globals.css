@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/*
+  Salem Tamil Roots design system.
+  Brand colours come from the current site and the logo: deep forest green (#084422),
+  leaf green, the cream page colour (#F5F1E6) and the warm tan accent (#D4A373).
+  For a livelier storefront they are joined by turmeric gold and kumkum red, the two
+  festive colours already used in the Menmai posters.
+*/
+@theme {
+  --color-forest-950: #04210f;
+  --color-forest-900: #063519;
+  --color-forest-800: #084422; /* primary brand green */
+  --color-forest-700: #0f5a31;
+  --color-forest-600: #2f855a;
+  --color-leaf-400: #7fbfa1;
+  --color-leaf-200: #cfe6d9;
+  --color-leaf-100: #eaf4ee;
+
+  --color-turmeric-600: #c98a0c;
+  --color-turmeric-500: #e3a220; /* vibrant accent */
+  --color-turmeric-200: #f7deA0;
+  --color-turmeric-100: #fbf0d6;
+
+  --color-kumkum-700: #7f1616;
+  --color-kumkum-600: #9b1c1c; /* offers, sale badges */
+  --color-kumkum-100: #fbe4e1;
+
+  --color-tan-500: #d4a373; /* brand accent */
+  --color-tan-200: #efdcc4;
+
+  --color-cream: #f5f1e6; /* brand page colour */
+  --color-paper: #fffdf8;
+  --color-ink: #1b2a21;
+  --color-muted: #5b6b60;
+  --color-line: #e3dccb;
+
+  --font-display: var(--font-fraunces), var(--font-catamaran), Georgia, serif;
+  --font-sans: var(--font-poppins), var(--font-noto-tamil), system-ui, sans-serif;
+  --font-tamil: var(--font-catamaran), var(--font-noto-tamil), sans-serif;
+
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 2px rgb(8 68 34 / 0.06), 0 8px 24px -12px rgb(8 68 34 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(8 68 34 / 0.08), 0 22px 40px -18px rgb(8 68 34 / 0.35);
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes rise {
+    from { opacity: 0.001; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Tamil reads better with a little more line height and a Tamil-first stack. */
+  html[lang="ta"] body { font-family: var(--font-tamil); line-height: 1.75; }
+  html[lang="ta"] .font-display { font-family: var(--font-catamaran), var(--font-fraunces), serif; font-weight: 800; }
+  h1, h2, h3 { text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--color-turmeric-500); outline-offset: 3px; border-radius: 6px; }
+  ::selection { background: var(--color-turmeric-200); }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-forest-600);
+  }
+  html[lang="ta"] .eyebrow { letter-spacing: 0.02em; text-transform: none; font-size: 0.85rem; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    border-radius: 999px; font-weight: 600; padding: 0.8rem 1.4rem; line-height: 1;
+    transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--color-forest-800); color: #fff; box-shadow: 0 6px 18px -8px rgb(8 68 34 / 0.6); }
+  .btn-primary:hover { background: var(--color-forest-700); }
+  .btn-accent { background: var(--color-turmeric-500); color: var(--color-forest-950); box-shadow: 0 6px 18px -8px rgb(201 138 12 / 0.7); }
+  .btn-accent:hover { background: var(--color-turmeric-600); }
+  .btn-ghost { background: transparent; color: var(--color-forest-800); box-shadow: inset 0 0 0 1.5px var(--color-forest-800); }
+  .btn-ghost:hover { background: var(--color-leaf-100); }
+  .reveal { animation: var(--animate-rise); animation-timeline: view(); animation-range: entry 0% entry 40%; }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Rich text from the product editor (STRPX sections) */
+@layer components {
+  .strp-prose { display: flex; flex-direction: column; gap: 0.85em; max-width: 68ch; }
+  .strp-prose ul, .strp-prose ol { display: flex; flex-direction: column; gap: 0.45em; padding-left: 1.3em; }
+  .strp-prose ul { list-style: disc; }
+  .strp-prose ol { list-style: decimal; }
+  .strp-prose li::marker { color: var(--color-turmeric-500); }
+  .strp-prose strong, .strp-prose b { font-weight: 700; }
+  .strp-prose h3, .strp-prose h4 { font-weight: 700; font-size: 1.05em; }
+  .strp-prose blockquote { border-left: 3px solid var(--color-turmeric-500); padding-left: 1em; font-style: italic; }
+}
