@@ -8,6 +8,7 @@ import { CartProvider } from "@/lib/cart";
 import { usingSampleData } from "@/lib/api";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { UiSwitch } from "@/components/layout/UiSwitch";
 import "../globals.css";
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", axes: ["opsz", "SOFT"], display: "swap" });
@@ -51,6 +52,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
             <Header />
             <main>{children}</main>
             <Footer />
+            <UiSwitch />
           </CartProvider>
         </NextIntlClientProvider>
       </body>

@@ -66,8 +66,12 @@ active; otherwise the MRP is the price.
 The app listens only on the server itself (`localhost:3101`) and nginx sends the rebuilt pages to it,
 while every other address keeps going to the current frontend. See `deploy/`:
 
-- `salemtamilroots-web.service`: systemd service
-- `nginx-switchover.conf`: the nginx lines for the switch-over, and how to roll back
+- `uat/`: UAT setup: nginx config with a modern/legacy switch, systemd service (port 3102),
+  env file and `deploy.sh`
+- `next-proxy.conf`: nginx snippet shared by both
+- `salemtamilroots-web.service`, `nginx-switchover.conf`: production (port 3101), for later
+
+On UAT, testers switch with `/switch-ui/modern` and `/switch-ui/legacy` (also as buttons on both sites).
 
 Start the server with `npm run start`. It uses `--hostname localhost`: with `--hostname 127.0.0.1`
 Next.js 16 sends the language rewrite to itself and loops.
