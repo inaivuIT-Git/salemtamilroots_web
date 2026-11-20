@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { CartProvider } from "@/lib/cart";
 import { SessionProvider } from "@/lib/session";
+import { WishlistProvider } from "@/lib/wishlist";
 import { usingSampleData } from "@/lib/api";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -47,6 +48,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
       <body className="min-h-dvh">
         <NextIntlClientProvider>
           <SessionProvider>
+          <WishlistProvider>
           <CartProvider>
             {usingSampleData && (
               <div className="bg-kumkum-600 px-4 py-1.5 text-center text-xs font-semibold text-white">{t("sample")}</div>
@@ -56,6 +58,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
             <Footer />
             <UiSwitch />
           </CartProvider>
+          </WishlistProvider>
           </SessionProvider>
         </NextIntlClientProvider>
       </body>

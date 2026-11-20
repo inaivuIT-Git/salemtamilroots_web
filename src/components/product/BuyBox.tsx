@@ -7,6 +7,7 @@ import { discountPercent, rupees } from "@/lib/format";
 import { Price } from "@/components/ui/Price";
 import { Gallery } from "./Gallery";
 import { AddToCartButton } from "./AddToCartButton";
+import { WishHeart } from "./WishHeart";
 
 export function BuyBox({ p, children }: { p: ProductDetail; children?: React.ReactNode }) {
   const t = useTranslations("product");
@@ -90,10 +91,15 @@ export function BuyBox({ p, children }: { p: ProductDetail; children?: React.Rea
             </span>
           </div>
           {v && (
-            <AddToCartButton
-              disabled={!v.inStock}
-              line={{ variantId: v.id, productId: p.id, slug: p.slug, name: p.name, variantLabel: v.label, image: images[0], price: v.price, qty }}
-            />
+            <div className="flex items-stretch gap-3">
+              <div className="min-w-0 flex-1">
+                <AddToCartButton
+                  disabled={!v.inStock}
+                  line={{ variantId: v.id, productId: p.id, slug: p.slug, name: p.name, variantLabel: v.label, image: images[0], price: v.price, qty }}
+                />
+              </div>
+              <WishHeart productId={v.id} name={p.name} large />
+            </div>
           )}
           <p className="text-sm text-muted">{t("cartNote")}</p>
         </div>

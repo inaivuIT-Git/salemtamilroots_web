@@ -63,3 +63,9 @@ export const CheckIcon = ({ className }: P) => (
     <path d="m5 12 4.5 4.5L19 7" />
   </svg>
 );
+
+export const HeartIcon = ({ className, filled = false }: P & { filled?: boolean }) => (
+  <svg viewBox="0 0 24 24" className={className} fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M12 20.5s-7.5-4.4-9.6-9.2C.9 7.8 3.2 4 6.9 4c2.1 0 3.6 1.2 5.1 3 1.5-1.8 3-3 5.1-3 3.7 0 6 3.8 4.5 7.3-2.1 4.8-9.6 9.2-9.6 9.2z" />
+  </svg>
+);

@@ -368,6 +368,29 @@
     "saved": "Saved.",
     "notYours": "This order belongs to a different account.",
     "errLoad": "We couldn't load this. Please refresh the page.",
-    "errGeneric": "Something went wrong. Please try again."
+    "errGeneric": "Something went wrong. Please try again.",
+    "navWishlist": "Wishlist",
+    "wishlistEmpty": "Nothing saved yet. Tap the heart on a product to save it here.",
+    "outOfStock": "Out of stock right now",
+    "reviewed": "You reviewed this"
+  },
+  "wishlist": {
+    "save": "Save {name} to your wishlist",
+    "remove": "Remove {name} from your wishlist",
+    "saved": "Saved to wishlist",
+    "saveShort": "Save to wishlist"
+  },
+  "review": {
+    "write": "Write a review",
+    "rate": "How was {name}?",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "titlePlaceholder": "Headline (optional)",
+    "commentPlaceholder": "What did you like? How did your family find it? (optional)",
+    "submit": "Post review",
+    "sending": "Posting…",
+    "cancel": "Cancel",
+    "thanks": "Thank you! Your review will appear on the product page within a few minutes.",
+    "errRating": "Choose a star rating.",
+    "errGeneric": "We couldn't post your review. Please try again."
   }
 }

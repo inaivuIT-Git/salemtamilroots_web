@@ -21,6 +21,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
 
   const sections = [
     { href: "/account", label: t("navOrders"), active: pathname === "/account" || pathname.startsWith("/account/orders") },
+    { href: "/account/wishlist", label: t("navWishlist"), active: pathname.startsWith("/account/wishlist") },
     { href: "/account/addresses", label: t("navAddresses"), active: pathname.startsWith("/account/addresses") },
     { href: "/account/profile", label: t("navProfile"), active: pathname.startsWith("/account/profile") },
   ];

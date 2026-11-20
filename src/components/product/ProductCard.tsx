@@ -5,6 +5,7 @@ import { discountPercent } from "@/lib/format";
 import { Price } from "@/components/ui/Price";
 import { Rating } from "@/components/ui/Rating";
 import { AddToCartButton } from "./AddToCartButton";
+import { WishHeart } from "./WishHeart";
 
 const tints = ["bg-leaf-100", "bg-turmeric-100", "bg-tan-200/60", "bg-kumkum-100/70"];
 
@@ -25,6 +26,11 @@ export function ProductCard({ p, index = 0, badge }: { p: ProductSummary; index?
         ) : (
           <Image src="/brand/logo.png" alt="" fill className="object-contain p-14 opacity-40" />
         )}
+        {p.variantId ? (
+          <div className="absolute top-3 right-3 z-20">
+            <WishHeart productId={p.variantId} name={p.name} />
+          </div>
+        ) : null}
         {(badge || off > 0) && (
           <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
             {badge && <span className="rounded-full bg-turmeric-500 px-2.5 py-1 text-xs font-bold text-forest-950 shadow">{badge}</span>}

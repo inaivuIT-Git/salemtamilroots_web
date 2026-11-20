@@ -8,6 +8,7 @@ import { api, ApiError } from "@/lib/client-api";
 import { rupees } from "@/lib/format";
 import { formatDate } from "./OrdersList";
 import { STEPS, StatusPill, useStatusLabel } from "./status";
+import { ReviewForm } from "./ReviewForm";
 
 type Detail = {
   orderId: number;
@@ -23,7 +24,7 @@ type Detail = {
   address?: { name?: string | null; addressLine?: string | null; phone?: string | null } | null;
   tracking?: { id: string; courier?: string | null; url?: string | null } | null;
   refund?: { status: string; message: string; amount: number } | null;
-  items: { productId: number; productName: string; slug?: string; imageUrl?: string | null; quantity: number; unitPrice: number; lineTotal: number; expectedDeliveryDate?: string | null; deliveredAt?: string | null }[];
+  items: { productId: number; productName: string; slug?: string; imageUrl?: string | null; quantity: number; unitPrice: number; lineTotal: number; expectedDeliveryDate?: string | null; deliveredAt?: string | null; canReview?: boolean; isReviewed?: boolean }[];
   canCancel: boolean;
   canPay: boolean;
   hasInvoice: boolean;
@@ -46,6 +47,8 @@ export function OrderDetail({ orderId }: { orderId: number }) {
   const [d, setD] = useState<Detail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [thanked, setThanked] = useState<number[]>([]);
+  const tReview = useTranslations("review");
 
   const load = useCallback(() => {
     api<Detail>(`/api/account/orders/${orderId}`)
@@ -134,7 +137,7 @@ export function OrderDetail({ orderId }: { orderId: number }) {
           <h3 className="mb-4 font-semibold">{t("items")}</h3>
           <ul className="flex flex-col gap-4">
             {d.items.map((i) => (
-              <li key={`${i.productId}-${i.productName}`} className="flex items-center gap-3">
+              <li key={`${i.productId}-${i.productName}`} className="flex flex-wrap items-center gap-3">
                 <span className="relative size-16 shrink-0 overflow-hidden rounded-2xl bg-leaf-100">
                   <Image src={i.imageUrl || "/brand/logo.png"} alt="" fill sizes="64px" className="object-contain p-1.5" unoptimized />
                 </span>
@@ -147,6 +150,27 @@ export function OrderDetail({ orderId }: { orderId: number }) {
                   <span className="block text-sm text-muted">× {i.quantity}</span>
                 </span>
                 <span className="font-semibold tabular-nums">{i.lineTotal ? rupees(i.lineTotal, locale) : t("free")}</span>
+                {(i.canReview || i.isReviewed) && (
+                  <div className="basis-full pl-[76px]">
+                    {i.isReviewed ? (
+                      <span role="status" className="text-sm font-semibold text-forest-600">
+                        ✓ {thanked.includes(i.productId) ? tReview("thanks") : t("reviewed")}
+                      </span>
+                    ) : (
+                      <ReviewForm
+                        orderId={d.orderId}
+                        productId={i.productId}
+                        productName={i.productName}
+                        onDone={() => {
+                          setThanked((cur) => [...cur, i.productId]);
+                          setD((cur) =>
+                            cur && { ...cur, items: cur.items.map((x) => (x.productId === i.productId ? { ...x, canReview: false, isReviewed: true } : x)) },
+                          );
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
