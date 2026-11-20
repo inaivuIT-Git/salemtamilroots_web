@@ -67,7 +67,8 @@ The app listens only on the server itself (`localhost:3101`) and nginx sends the
 while every other address keeps going to the current frontend. See `deploy/`:
 
 - `uat/`: UAT setup: nginx config with a modern/legacy switch, systemd service (port 3102),
-  env file and `deploy.sh`
+  env file and `deploy.sh`. **Step-by-step guide for UAT, with the new API:**
+  [`deploy/uat/UAT-DEPLOYMENT.md`](deploy/uat/UAT-DEPLOYMENT.md)
 - `next-proxy.conf`: nginx snippet shared by both
 - `salemtamilroots-web.service`, `nginx-switchover.conf`: production (port 3101), for later
 
