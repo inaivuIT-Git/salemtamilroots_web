@@ -15,9 +15,32 @@ const STATES = [
 
 type Fields = { name: string; phone: string; line1: string; line2: string; city: string; state: string; pincode: string };
 
-export function AddressForm({ defaultPhone, onSaved, onCancel }: { defaultPhone: string; onSaved: (list: Address[]) => void; onCancel?: () => void }) {
+export function AddressForm({
+  defaultPhone,
+  initial,
+  onSaved,
+  onCancel,
+}: {
+  defaultPhone: string;
+  /** Editing this saved address (PUT /api/account/addresses/{id}); otherwise a new one. */
+  initial?: Address;
+  onSaved: (list: Address[]) => void;
+  onCancel?: () => void;
+}) {
   const t = useTranslations("address");
-  const [f, setF] = useState<Fields>({ name: "", phone: defaultPhone, line1: "", line2: "", city: "", state: "Tamil Nadu", pincode: "" });
+  const [f, setF] = useState<Fields>(
+    initial
+      ? {
+          name: initial.name ?? "",
+          phone: initial.phone ?? defaultPhone,
+          line1: initial.line1 ?? "",
+          line2: initial.line2 ?? "",
+          city: initial.city ?? "",
+          state: initial.state ?? "Tamil Nadu",
+          pincode: initial.pincode ?? "",
+        }
+      : { name: "", phone: defaultPhone, line1: "", line2: "", city: "", state: "Tamil Nadu", pincode: "" },
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -29,7 +52,11 @@ export function AddressForm({ defaultPhone, onSaved, onCancel }: { defaultPhone:
     setError(null);
     setSaving(true);
     try {
-      onSaved(await api<Address[]>("/api/checkout/addresses", { method: "POST", body: f }));
+      onSaved(
+        initial
+          ? await api<Address[]>(`/api/account/addresses/${initial.addressId}`, { method: "PUT", body: f })
+          : await api<Address[]>("/api/checkout/addresses", { method: "POST", body: f }),
+      );
     } catch (err) {
       if (err instanceof ApiError && err.fields) setErrors(err.fields);
       else setError(err instanceof ApiError ? err.message : t("errGeneric"));
@@ -49,7 +76,7 @@ export function AddressForm({ defaultPhone, onSaved, onCancel }: { defaultPhone:
 
   return (
     <form onSubmit={submit} className="grid gap-3 rounded-2xl border-2 border-dashed border-leaf-400 p-4 sm:grid-cols-2" noValidate>
-      <p className="font-semibold sm:col-span-2">{t("title")}</p>
+      <p className="font-semibold sm:col-span-2">{initial ? t("editTitle") : t("title")}</p>
       {field("name", t("name"), { autoComplete: "name" })}
       {field("phone", t("phone"), { type: "tel", inputMode: "numeric", autoComplete: "tel-national" })}
       <div className="sm:col-span-2">{field("line1", t("line1"), { autoComplete: "address-line1" })}</div>
