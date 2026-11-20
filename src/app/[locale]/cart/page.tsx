@@ -61,10 +61,10 @@ export default function CartPage() {
               </span>
               <span className="text-2xl font-bold text-white tabular-nums">{rupees(subtotal, locale)}</span>
             </div>
-            <button type="button" disabled className="btn btn-accent w-full opacity-60">
+            <Link href="/checkout" className="btn btn-accent w-full">
               {t("checkout")}
-            </button>
-            <p className="text-sm text-leaf-200">{t("checkoutSoon")}</p>
+            </Link>
+            <p className="text-sm text-leaf-200">{t("checkoutNote")}</p>
           </aside>
         </div>
       )}

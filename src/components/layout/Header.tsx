@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/session";
 import { legacy } from "@/lib/site";
 import { CartIcon, CloseIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/ui/icons";
 
@@ -13,6 +14,8 @@ export function Header() {
   const locale = useLocale();
   const pathname = usePathname();
   const { count } = useCart();
+  const { signedIn } = useAuth();
+  const accountHref = signedIn ? "/account" : "/signin";
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const other = locale === "en" ? "ta" : "en";
@@ -96,9 +99,9 @@ export function Header() {
             >
               {t("nav.language")}
             </Link>
-            <a href={legacy.signin} className="hidden rounded-full p-2.5 text-forest-800 hover:bg-leaf-100 sm:block" aria-label={t("nav.account")}>
+            <Link href={accountHref} className="hidden rounded-full p-2.5 text-forest-800 hover:bg-leaf-100 sm:block" aria-label={signedIn ? t("nav.account") : t("nav.signin")}>
               <UserIcon className="size-[22px]" />
-            </a>
+            </Link>
             <Link href="/cart" className="relative rounded-full bg-forest-800 p-2.5 text-white hover:bg-forest-700" aria-label={t("nav.cart")}>
               <CartIcon className="size-[22px]" />
               {count > 0 && (
@@ -135,9 +138,9 @@ export function Header() {
                 </a>
               ),
             )}
-            <a href={legacy.signin} className="rounded-xl px-3 py-3 text-lg font-medium hover:bg-leaf-100">
-              {t("nav.account")}
-            </a>
+            <Link href={accountHref} className="rounded-xl px-3 py-3 text-lg font-medium hover:bg-leaf-100">
+              {signedIn ? t("nav.account") : t("nav.signin")}
+            </Link>
           </div>
         </div>
       )}

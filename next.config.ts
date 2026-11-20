@@ -3,8 +3,19 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const apiHost = new URL(process.env.API_BASE_URL ?? "https://uat.salemtamilroots.in");
 
+// Where /api/* goes when the app itself receives it (local development). On UAT nginx sends
+// /api straight to the API, so the browser always talks to one origin and the API's sign-in
+// cookie works. API_INTERNAL_URL skips Cloudflare on the server.
+const apiForRewrite = (process.env.API_INTERNAL_URL || process.env.API_BASE_URL || "https://uat.salemtamilroots.in").replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      { source: "/api/:path*", destination: `${apiForRewrite}/api/:path*` },
+      { source: "/assets/images/:path*", destination: `${apiForRewrite}/assets/images/:path*` },
+    ];
+  },
   images: {
     // Product and banner images are served by the API host (/assets/images/...). Browsers load them
     // directly, as on the current site: the image optimiser would fetch them server-side through

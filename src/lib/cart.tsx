@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 /*
   Guest cart kept on this device (localStorage). Visitors can shop without signing in;
-  the planned API merge endpoint moves it into their account at checkout.
+  at checkout PUT /api/checkout/cart makes it the account's cart.
 */
 export type CartLine = {
   variantId: number;
@@ -23,6 +23,8 @@ type CartState = {
   add: (line: CartLine) => void;
   setQty: (variantId: number, qty: number) => void;
   remove: (variantId: number) => void;
+  /** Empties the device's cart (after an order is placed). */
+  clear: () => void;
   lastAdded: CartLine | null;
 };
 
@@ -79,10 +81,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const remove = useCallback((variantId: number) => persist(read().filter((l) => l.variantId !== variantId)), [persist]);
+  const clear = useCallback(() => persist([]), [persist]);
 
   const value = useMemo(
-    () => ({ lines, count: lines.reduce((n, l) => n + l.qty, 0), add, setQty, remove, lastAdded }),
-    [lines, add, setQty, remove, lastAdded],
+    () => ({ lines, count: lines.reduce((n, l) => n + l.qty, 0), add, setQty, remove, clear, lastAdded }),
+    [lines, add, setQty, remove, clear, lastAdded],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
