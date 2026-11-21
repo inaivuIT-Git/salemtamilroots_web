@@ -8,9 +8,6 @@ import { CartProvider } from "@/lib/cart";
 import { SessionProvider } from "@/lib/session";
 import { WishlistProvider } from "@/lib/wishlist";
 import { usingSampleData } from "@/lib/api";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { UiSwitch } from "@/components/layout/UiSwitch";
 import "../globals.css";
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", axes: ["opsz", "SOFT"], display: "swap" });
@@ -53,10 +50,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
             {usingSampleData && (
               <div className="bg-kumkum-600 px-4 py-1.5 text-center text-xs font-semibold text-white">{t("sample")}</div>
             )}
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <UiSwitch />
+            {children}
           </CartProvider>
           </WishlistProvider>
           </SessionProvider>
