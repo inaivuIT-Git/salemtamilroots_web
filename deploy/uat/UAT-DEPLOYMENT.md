@@ -103,8 +103,8 @@ The script builds, starts the API and checks it. It should end with `API <commit
 
 ## Step 4. nginx: send the new pages to the new site
 
-The repo's UAT nginx file now also sends `/signin`, `/checkout`, `/account`, `/account/...` and
-`/orders/...` to the new site. Compare it with the live one, then install it:
+The repo's UAT nginx file now also sends `/signin`, `/checkout`, `/account`, `/account/...`,
+`/orders/...` and the admin area (`/admin`, `/admin/...`) to the new site. Compare it with the live one, then install it:
 
 ```bash
 cd /opt/uat/salemtamilroots_web && sudo git fetch origin main
@@ -171,6 +171,11 @@ site), then:
 6. **Wishlist and reviews:** tap a heart on a product → My account → Wishlist. For a review, an order
    item must be delivered: mark one delivered in the admin pages, then "Write a review" under it.
 7. **Tamil:** switch to தமிழ் and repeat a few pages; nothing should scroll sideways on a phone.
+8. **Admin orders:** open `https://uat.salemtamilroots.in/admin` and sign in with an admin account's email
+   (or phone) and password, as on the old admin page. Find the test orders under "To ship", move one
+   through the next steps to "Shipment assigned" (choose the courier, enter a tracking number) and on to
+   "Delivered", then use "Email the invoice to the customer". Mark an online test order paid, and
+   cancel another: its stock goes back.
 
 Useful while testing:
 
