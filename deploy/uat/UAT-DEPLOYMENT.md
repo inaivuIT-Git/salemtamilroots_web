@@ -13,8 +13,7 @@ Time: about 45 minutes the first time. Later updates are steps 6 and 7 only (abo
 - **The database is not changed.** The new API reads and writes the same UAT database, with the same
   tables. No migrations, nothing to back up beyond what you normally do.
 - **Rollback takes one minute** (see the end): the old API stays installed, just stopped.
-- **Branch:** until the pull requests are merged, deploy branch `claude/busy-einstein-y6le18` of both
-  repos. After merging, use `main`.
+- **Branch:** deploy `main` of both repos (the work is merged).
 - **You need:** SSH to the VPS as a user with `sudo`, and access to the MSG91 and Cashfree dashboards.
 - **Never paste passwords or keys into chat or tickets.** They go only into the files named below.
 
@@ -96,7 +95,7 @@ so only one may run at a time. Stop and disable the old one first (it stays inst
 sudo systemctl stop uat_strroots
 sudo systemctl disable uat_strroots
 sudo systemctl enable salemtamilroots-api-uat
-sudo bash /opt/uat/salemtamilroots_web_backend/src/deploy/uat/deploy-api.sh claude/busy-einstein-y6le18
+sudo bash /opt/uat/salemtamilroots_web_backend/src/deploy/uat/deploy-api.sh main
 ```
 
 The script builds, starts the API and checks it. It should end with `API <commit> is up on
@@ -108,8 +107,8 @@ The repo's UAT nginx file now also sends `/signin`, `/checkout`, `/account`, `/a
 `/orders/...` to the new site. Compare it with the live one, then install it:
 
 ```bash
-cd /opt/uat/salemtamilroots_web && sudo git fetch origin claude/busy-einstein-y6le18
-sudo git show origin/claude/busy-einstein-y6le18:deploy/uat/nginx-uat.salemtamilroots.in.conf > /tmp/uat-nginx.conf
+cd /opt/uat/salemtamilroots_web && sudo git fetch origin main
+sudo git show origin/main:deploy/uat/nginx-uat.salemtamilroots.in.conf > /tmp/uat-nginx.conf
 diff /etc/nginx/sites-enabled/uat.salemtamilroots.in /tmp/uat-nginx.conf
 ```
 
@@ -145,7 +144,7 @@ Keep the existing lines (`API_BASE_URL`, `API_INTERNAL_URL=http://127.0.0.1:5001
 ## Step 6. Deploy the new site
 
 ```bash
-sudo bash /opt/uat/salemtamilroots_web/deploy/uat/deploy.sh claude/busy-einstein-y6le18
+sudo bash /opt/uat/salemtamilroots_web/deploy/uat/deploy.sh main
 ```
 
 It installs packages (Next.js 16.4.6, with the security fixes), builds and restarts the site, and should
@@ -182,11 +181,11 @@ journalctl -u salemtamilroots-web-uat -f      # site log
 
 ## Updating later
 
-After new commits are pushed (or after merging, with `main`):
+After new commits are merged into `main`:
 
 ```bash
-sudo bash /opt/uat/salemtamilroots_web_backend/src/deploy/uat/deploy-api.sh claude/busy-einstein-y6le18
-sudo bash /opt/uat/salemtamilroots_web/deploy/uat/deploy.sh claude/busy-einstein-y6le18
+sudo bash /opt/uat/salemtamilroots_web_backend/src/deploy/uat/deploy-api.sh main
+sudo bash /opt/uat/salemtamilroots_web/deploy/uat/deploy.sh main
 ```
 
 The API script keeps the last five builds and switches back automatically if the new one doesn't
