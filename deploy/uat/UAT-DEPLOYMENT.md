@@ -104,7 +104,7 @@ The script builds, starts the API and checks it. It should end with `API <commit
 ## Step 4. nginx: send the new pages to the new site
 
 The repo's UAT nginx file now also sends `/signin`, `/checkout`, `/account`, `/account/...`,
-`/orders/...` and the admin area (`/admin`, `/admin/...`) to the new site. Compare it with the live one, then install it:
+`/orders/...` and the admin area (`/admin`, `/admin/...`, orders and products) to the new site. Compare it with the live one, then install it:
 
 ```bash
 cd /opt/uat/salemtamilroots_web && sudo git fetch origin main
@@ -176,6 +176,11 @@ site), then:
    through the next steps to "Shipment assigned" (choose the courier, enter a tracking number) and on to
    "Delivered", then use "Email the invoice to the customer". Mark an online test order paid, and
    cancel another: its stock goes back.
+9. **Admin products and stock:** in the admin area open **Products**. Search for a product, open it and:
+   type a new base price (the new MRP shows before you save) and save; add a 10% discount and check the
+   shop shows the lower price; under Stock use "Stock arrived" with a batch code, then "Correct the
+   count"; upload a main picture (JPG, PNG or WebP) and remove an extra one; hide the product and check
+   it's gone from the shop, then show it again. Use a test product, or put real values back afterwards.
 
 Useful while testing:
 

@@ -63,3 +63,15 @@ export function human(text?: string | null) {
   const words = text.replace(/([a-z0-9])([A-Z])/g, "$1 $2").split(" ");
   return words.map((w, i) => (i === 0 ? w : w.toLowerCase())).join(" ");
 }
+
+const STOCK: Record<string, { label: string; tone: Tone }> = {
+  ok: { label: "In stock", tone: "info" },
+  low: { label: "Running low", tone: "warn" },
+  out: { label: "Out of stock", tone: "stop" },
+};
+
+/** Stock level from the API: out at or below the minimum, low a little above it. */
+export function StockBadge({ level }: { level: string }) {
+  const s = STOCK[level] ?? STOCK.ok;
+  return <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${TONE[s.tone]}`}>{s.label}</span>;
+}

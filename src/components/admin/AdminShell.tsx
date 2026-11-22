@@ -14,7 +14,7 @@ export const isAdminRole = (role?: string | null) => role === "Admin" || role ==
 
 const SECTIONS = [
   { href: "/admin/orders", label: "Orders", ready: true },
-  { href: "/admin/products", label: "Products", ready: false },
+  { href: "/admin/products", label: "Products", ready: true },
   { href: "/admin/coupons", label: "Coupons", ready: false },
   { href: "/admin/settings", label: "Settings", ready: false },
 ];
@@ -32,13 +32,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-[#f3f5f2] text-ink">
       <header className="sticky top-0 z-30 border-b border-line bg-forest-900 text-white" style={{ top: "env(safe-area-inset-top, 0px)" }}>
-        <div className="flex h-14 items-center gap-4 px-4 sm:px-6" style={{ paddingLeft: "max(16px, env(safe-area-inset-left, 0px))", paddingRight: "max(16px, env(safe-area-inset-right, 0px))" }}>
+        <div className="flex min-h-14 flex-wrap items-center gap-x-4 px-4 sm:flex-nowrap sm:px-6" style={{ paddingLeft: "max(16px, env(safe-area-inset-left, 0px))", paddingRight: "max(16px, env(safe-area-inset-right, 0px))" }}>
           <Link href="/admin/orders" className="flex items-center gap-2 font-semibold">
             <Image src="/brand/logo.png" alt="" width={30} height={29} className="rounded-full bg-white" />
             <span>Salem Tamil Roots</span>
             <span className="rounded bg-turmeric-500 px-1.5 py-0.5 text-[11px] font-bold text-forest-950 uppercase">Admin</span>
           </Link>
-          <nav className="no-scrollbar ml-2 flex flex-1 gap-1 overflow-x-auto" aria-label="Admin sections">
+          <nav className="no-scrollbar order-last -mx-1 flex w-full gap-1 overflow-x-auto pb-2 sm:order-none sm:mx-0 sm:ml-2 sm:w-auto sm:flex-1 sm:pb-0" aria-label="Admin sections">
             {SECTIONS.map((s) =>
               s.ready ? (
                 <Link
@@ -57,7 +57,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             )}
           </nav>
           {allowed && (
-            <div className="flex items-center gap-3 text-sm">
+            <div className="ml-auto flex items-center gap-3 py-2 text-sm sm:ml-0">
               <span className="hidden text-leaf-200 sm:inline">{me?.firstName || me?.email || "Admin"}</span>
               <button
                 type="button"
