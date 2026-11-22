@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { api, ApiError } from "@/lib/client-api";
 import { StockBadge, inr, when } from "./labels";
+import { SizeFields, emptySize, sizeBody, type Options, type SizeValues } from "./AdminProductNew";
 
 type Discount = { type: "percentage" | "flat"; value: number; from: string; to: string };
 type Product = {
@@ -72,6 +73,12 @@ export function AdminProduct({ productId }: { productId: number }) {
   }, [productId]);
   useEffect(load, [load]);
 
+  // Just created: say what's left before it can go in the shop.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("created") === "1")
+      setNotice("Created and hidden from the shop. Add pictures and the words, then press Show in shop.");
+  }, [productId]);
+
   /** Runs a change that answers with the updated product. */
   async function run(action: () => Promise<Product>, done: string) {
     setBusy(true);
@@ -118,6 +125,10 @@ export function AdminProduct({ productId }: { productId: number }) {
             </p>
           </div>
           <ShopToggle p={p} busy={busy} onChange={(active) => post("active", { active }, active ? "Shown in the shop." : "Hidden from the shop.")} />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href={`/admin/products/${p.productId}/text`} className="rounded-lg border border-line bg-white px-3 py-1.5 text-sm font-semibold hover:border-forest-600">Words and story</Link>
+          <AddSize productId={p.productId} name={p.name} busy={busy} />
         </div>
         {p.sizes.length > 1 && (
           <nav className="flex flex-wrap gap-2" aria-label="Sizes">
@@ -468,5 +479,45 @@ function ImagesCard({ p, busy, run }: { p: Product; busy: boolean; run: (a: () =
         </label>
       </div>
     </section>
+  );
+}
+
+/** Another size of this product: its words are copied over; it starts hidden. */
+function AddSize({ productId, name, busy }: { productId: number; name: string; busy: boolean }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [units, setUnits] = useState<Options["units"] | null>(null);
+  const [v, setV] = useState<SizeValues>(emptySize);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  function start() {
+    setOpen(true);
+    if (!units) api<Options>("/api/admin/products/options").then((o) => setUnits(o.units)).catch(() => setError("Units could not be loaded."));
+  }
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      const r = await api<{ productId: number }>(`/api/admin/products/${productId}/sizes`, { method: "POST", body: sizeBody(v) });
+      router.push(`/admin/products/${r.productId}?created=1`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "The size could not be added.");
+      setSaving(false);
+    }
+  }
+
+  if (!open) return <button type="button" disabled={busy} onClick={start} className="rounded-lg border border-line bg-white px-3 py-1.5 text-sm font-semibold hover:border-forest-600">+ Add a size</button>;
+  return (
+    <form onSubmit={save} className="flex w-full max-w-xl flex-col gap-3 rounded-xl border border-line bg-white p-4">
+      <h2 className="font-semibold">New size of {name}</h2>
+      {error && <p role="alert" className="rounded-lg bg-kumkum-100 p-3 text-sm text-kumkum-700">{error}</p>}
+      {units ? <SizeFields units={units} v={v} set={setV} /> : !error && <p className="text-sm text-muted">Loading…</p>}
+      <div className="flex gap-2">
+        <button disabled={saving || !units} className={primary}>{saving ? "Adding…" : "Add size"}</button>
+        <button type="button" onClick={() => setOpen(false)} className={secondary}>Cancel</button>
+      </div>
+    </form>
   );
 }

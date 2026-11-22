@@ -181,6 +181,12 @@ site), then:
    shop shows the lower price; under Stock use "Stock arrived" with a batch code, then "Correct the
    count"; upload a main picture (JPG, PNG or WebP) and remove an extra one; hide the product and check
    it's gone from the shop, then show it again. Use a test product, or put real values back afterwards.
+10. **New product and its words:** Products → **+ New product**. Enter an English name (letters,
+    numbers and spaces; it becomes the web address), seller, category, the first size, base price and
+    stock → Create. It starts hidden. Open **Words and story**: add the Tamil title, a short description
+    with some bold text, and two story sections (one as a list) → Save. Back on the product, **+ Add a
+    size** (its words are copied), add a picture to each size, then **Show in shop** on both. Open the
+    shop page in English and in தமிழ் and check the words and both sizes appear.
 
 Useful while testing:
 

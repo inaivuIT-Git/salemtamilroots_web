@@ -78,7 +78,10 @@ export function AdminProducts() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Products</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold">Products</h1>
+          <Link href="/admin/products/new" className="rounded-lg bg-forest-800 px-3 py-1.5 text-sm font-semibold text-white hover:bg-forest-700">+ New product</Link>
+        </div>
         <form
           className="flex flex-wrap items-end gap-2"
           onSubmit={(e) => {
