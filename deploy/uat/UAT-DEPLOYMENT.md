@@ -178,8 +178,9 @@ site), then:
    cancel another: its stock goes back.
 9. **Admin products and stock:** in the admin area open **Products**. Search for a product, open it and:
    type a new base price (the new MRP shows before you save) and save; add a 10% discount and check the
-   shop shows the lower price; under Stock use "Stock arrived" with a batch code, then "Correct the
-   count"; upload a main picture (JPG, PNG or WebP) and remove an extra one; hide the product and check
+   shop shows the lower price; under Stock use "Stock arrived" with a batch code and an expiry date
+   about two weeks away: the batch shows under Batches as "Expires soon" and the product appears in
+   the **Expiring** tab of the list; then "Correct the count"; upload a main picture (JPG, PNG or WebP) and remove an extra one; hide the product and check
    it's gone from the shop, then show it again. Use a test product, or put real values back afterwards.
 10. **New product and its words:** Products → **+ New product**. Enter an English name (letters,
     numbers and spaces; it becomes the web address), seller, category, the first size, base price and
