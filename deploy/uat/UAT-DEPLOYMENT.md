@@ -104,7 +104,7 @@ The script builds, starts the API and checks it. It should end with `API <commit
 ## Step 4. nginx: send the new pages to the new site
 
 The repo's UAT nginx file now also sends `/signin`, `/checkout`, `/account`, `/account/...`,
-`/orders/...` and the admin area (`/admin`, `/admin/...`, orders and products) to the new site. Compare it with the live one, then install it:
+`/orders/...` and the admin area (`/admin`, `/admin/...`, orders and products) and the blog (`/blog`, `/blog/...`) to the new site. Compare it with the live one, then install it:
 
 ```bash
 cd /opt/uat/salemtamilroots_web && sudo git fetch origin main
@@ -187,6 +187,9 @@ site), then:
     with some bold text, and two story sections (one as a list) → Save. Back on the product, **+ Add a
     size** (its words are copied), add a picture to each size, then **Show in shop** on both. Open the
     shop page in English and in தமிழ் and check the words and both sizes appear.
+11. **Blog:** open `https://uat.salemtamilroots.in/blog` (also "Blog" in the header and footer) and the
+    first post, in English and in தமிழ். All pictures should show and nothing should scroll sideways on a
+    phone. If `/blog` shows the old site, nginx doesn't have the `/blog` lines yet: repeat step 4.
 
 Useful while testing:
 
@@ -198,6 +201,9 @@ journalctl -u salemtamilroots-web-uat -f      # site log
 ## Updating later
 
 After new commits are merged into `main`:
+
+If the update adds pages (the release notes or the checklist say so, as for `/blog`), install the
+repo's nginx file first, as in step 4.
 
 ```bash
 sudo bash /opt/uat/salemtamilroots_web_backend/src/deploy/uat/deploy-api.sh main

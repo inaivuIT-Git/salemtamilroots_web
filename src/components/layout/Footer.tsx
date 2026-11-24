@@ -26,6 +26,7 @@ export function Footer() {
       title: t("company"),
       links: [
         { href: legacy.about, label: t("about") },
+        { href: "/blog", label: t("blog"), internal: true },
         { href: legacy.privacy, label: t("privacy") },
         { href: legacy.terms, label: t("terms") },
       ],
