@@ -32,6 +32,7 @@ export function Header() {
   const nav = [
     { href: "/", label: t("nav.home"), internal: true },
     { href: "/shop", label: t("nav.shop"), internal: true },
+    { href: "/blog", label: t("nav.blog"), internal: true },
     { href: legacy.about, label: t("nav.about") },
   ];
 

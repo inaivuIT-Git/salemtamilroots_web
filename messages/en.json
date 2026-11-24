@@ -15,7 +15,8 @@
     "close": "Close",
     "language": "தமிழ்",
     "languageLabel": "Switch to Tamil",
-    "signin": "Sign in"
+    "signin": "Sign in",
+    "blog": "Blog"
   },
   "announce": {
     "made": "Made in Salem, Tamil Nadu",
@@ -82,7 +83,8 @@
     "privacy": "Privacy policy",
     "terms": "Terms & conditions",
     "sell": "Sell with us",
-    "rights": "© {year} Salem Tamil Roots. All rights reserved."
+    "rights": "© {year} Salem Tamil Roots. All rights reserved.",
+    "blog": "Blog"
   },
   "sample": "Sample data: the API was not called. Set USE_SAMPLE_DATA=0 to show real products.",
   "cart": {
@@ -392,5 +394,18 @@
     "thanks": "Thank you! Your review will appear on the product page within a few minutes.",
     "errRating": "Choose a star rating.",
     "errGeneric": "We couldn't post your review. Please try again."
+  },
+  "blog": {
+    "title": "Blog",
+    "intro": "Stories, recipes and traditions from Salem and the Tamil kitchen.",
+    "read": "Read the story",
+    "minutes": "{n} min read",
+    "by": "By {name}",
+    "back": "All posts",
+    "shopTitle": "Taste the tradition",
+    "shopText": "Menmai millet brownies, herbal powders and more, made in Salem.",
+    "shopCta": "Explore the shop",
+    "talk": "Tell us what you would like to read",
+    "whatsapp": "Message us on WhatsApp"
   }
 }
