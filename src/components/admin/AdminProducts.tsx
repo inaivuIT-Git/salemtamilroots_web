@@ -19,8 +19,9 @@ type Row = {
   stock: number;
   minStock: number;
   stockLevel: "ok" | "low" | "out";
+  expiry?: "expired" | "soon" | null;
 };
-type Counts = { all: number; active: number; inactive: number; low: number; out: number };
+type Counts = { all: number; active: number; inactive: number; low: number; out: number; expiring: number };
 type Page = { page: number; pageSize: number; total: number; counts: Counts; products: Row[] };
 type Category = { categoryId: number; categoryName: string | null };
 
@@ -30,6 +31,7 @@ const VIEWS: { id: string; label: string; count: keyof Counts; query: Record<str
   { id: "active", label: "In the shop", count: "active", query: { active: "active" } },
   { id: "low", label: "Low stock", count: "low", query: { active: "active", stock: "low" } },
   { id: "out", label: "Out of stock", count: "out", query: { active: "active", stock: "out" } },
+  { id: "expiring", label: "Expiring", count: "expiring", query: { stock: "expiring" } },
   { id: "inactive", label: "Hidden", count: "inactive", query: { active: "inactive" } },
 ];
 
@@ -126,7 +128,7 @@ export function AdminProducts() {
               {v.label}
               {n !== undefined && (
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs tabular-nums ${active ? "bg-forest-800 text-white" : (v.id === "out" || v.id === "low") && n > 0 ? "bg-kumkum-100 text-kumkum-700" : "bg-[#e6e9e4] text-ink"}`}
+                  className={`rounded-full px-2 py-0.5 text-xs tabular-nums ${active ? "bg-forest-800 text-white" : (v.id === "out" || v.id === "low" || v.id === "expiring") && n > 0 ? "bg-kumkum-100 text-kumkum-700" : "bg-[#e6e9e4] text-ink"}`}
                 >
                   {n}
                 </span>
@@ -186,6 +188,11 @@ export function AdminProducts() {
                 <td className="px-4 py-3 text-right">
                   <span className="tabular-nums font-semibold">{p.stock}</span>
                   <span className="mt-1 block"><StockBadge level={p.stockLevel} /></span>
+                  {p.expiry && (
+                    <span className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${p.expiry === "expired" ? "bg-kumkum-100 text-kumkum-700" : "bg-turmeric-100 text-[#6b4a00]"}`}>
+                      {p.expiry === "expired" ? "Expired stock" : "Expires soon"}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   {p.active ? <span className="text-forest-800">Shown</span> : <span className="text-muted">Hidden</span>}

@@ -28,7 +28,18 @@ type Product = {
     quantity: number;
     minimum: number;
     level: "ok" | "low" | "out";
-    batches: { code?: string | null; quantity?: number | null; made?: string | null; expires?: string | null; added?: string | null }[];
+    batches: {
+      code?: string | null;
+      received: number;
+      remaining: number;
+      made?: string | null;
+      expires?: string | null;
+      added?: string | null;
+      status: "ok" | "soon" | "expired" | "used";
+    }[];
+    notInBatch: number;
+    expired: number;
+    expiringSoon: number;
   };
   images: { main?: string | null; more: { id: number; url: string }[] };
   sizes: { productId: number; size?: string | null; active: boolean; stock: number; current: boolean }[];
@@ -357,6 +368,16 @@ function StockCard({ p, busy, post }: { p: Product; busy: boolean; post: Post })
         <StockBadge level={p.stock.level} />
         <span className="text-sm text-muted">minimum {p.stock.minimum}</span>
       </div>
+      {p.stock.expired > 0 && (
+        <p role="status" className="mb-3 rounded-lg bg-kumkum-100 px-3 py-2 text-sm text-kumkum-700">
+          {p.stock.expired} in stock may be from an expired batch. Check the shelf, then use Correct the count for any you remove.
+        </p>
+      )}
+      {p.stock.expired === 0 && p.stock.expiringSoon > 0 && (
+        <p role="status" className="mb-3 rounded-lg bg-turmeric-100 px-3 py-2 text-sm text-[#6b4a00]">
+          {p.stock.expiringSoon} in stock {p.stock.expiringSoon === 1 ? "expires" : "expire"} within 30 days. A discount could help them sell first.
+        </p>
+      )}
 
       <div className="mb-3 flex gap-1 border-b border-line" role="tablist">
         {tabs.map(([id, text]) => (
@@ -408,20 +429,42 @@ function StockCard({ p, busy, post }: { p: Product; busy: boolean; post: Post })
       </form>
 
       {p.stock.batches.length > 0 && (
-        <details className="mt-4 text-sm">
-          <summary className="cursor-pointer text-forest-700">Batches received</summary>
-          <table className="mt-2 w-full">
-            <tbody>
-              {p.stock.batches.map((b, i) => (
-                <tr key={i} className="border-t border-line">
-                  <td className="py-1.5 font-medium">{b.code || "—"}</td>
-                  <td className="py-1.5 tabular-nums">{b.quantity ?? "—"}</td>
-                  <td className="py-1.5 text-right text-muted">{b.expires ? `expires ${when(b.expires)}` : when(b.added)}</td>
+        <div className="mt-4 text-sm">
+          <h3 className="mb-1 font-semibold">Batches</h3>
+          <p className="mb-2 text-xs text-muted">What's left is worked out from the stock count, selling the earliest expiry first.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[360px]">
+              <thead className="text-left text-xs text-muted">
+                <tr>
+                  <th className="py-1 font-medium">Batch</th>
+                  <th className="py-1 text-right font-medium">Left / received</th>
+                  <th className="py-1 text-right font-medium">Expires</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </details>
+              </thead>
+              <tbody>
+                {p.stock.batches.map((b, i) => (
+                  <tr key={i} className={`border-t border-line ${b.status === "used" ? "text-muted" : ""}`}>
+                    <td className="py-1.5 font-medium">
+                      {b.code || <span className="font-normal text-muted">No code</span>}
+                      {b.status === "expired" && <span className="ml-2 rounded-full bg-kumkum-100 px-2 py-0.5 text-xs font-semibold text-kumkum-700">Expired</span>}
+                      {b.status === "soon" && <span className="ml-2 rounded-full bg-turmeric-100 px-2 py-0.5 text-xs font-semibold text-[#6b4a00]">Expires soon</span>}
+                      {b.status === "used" && <span className="ml-2 text-xs">sold</span>}
+                    </td>
+                    <td className="py-1.5 text-right tabular-nums">{b.remaining} / {b.received}</td>
+                    <td className="py-1.5 text-right text-muted">{b.expires ? when(b.expires) : "—"}</td>
+                  </tr>
+                ))}
+                {p.stock.notInBatch > 0 && (
+                  <tr className="border-t border-line text-muted">
+                    <td className="py-1.5">Not in a batch</td>
+                    <td className="py-1.5 text-right tabular-nums">{p.stock.notInBatch}</td>
+                    <td />
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </section>
   );
